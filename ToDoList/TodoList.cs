@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace TodoList
 {
@@ -30,20 +31,44 @@ namespace TodoList
             }
         }
 
+        private void NormalizeIds()
+        {
+            for (int i = 0; i < Tasks.Count; i++)
+            {
+                Tasks[i].Id = i + 1;
+            }
+            currentId = Tasks.Count + 1;
+        }
+
         public void RemoveTask(int removeId)
         {
             var taskToRemove = Tasks.Find(t => t.Id == removeId);
             if (taskToRemove != null && Tasks.Remove(taskToRemove))
             {
-                for (int i = 0; i < Tasks.Count; i++)
-                {
-                    Tasks[i].Id = i + 1;
-                }
-                currentId = Tasks.Count + 1;
+                SaveToFile();
             }
             else
             {
                 Console.WriteLine("Удаление не удалось. Задача не найдена");
+            }
+        }
+
+        public void SaveToFile(string filePath = "tasks.json")
+        {
+            NormalizeIds();
+
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string json = JsonSerializer.Serialize(Tasks, options);
+            File.WriteAllText(filePath, json);
+        }
+
+        public void LoadFromFile(string filePath = "tasks.json")
+        {
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                Tasks = JsonSerializer.Deserialize<List<TodoTask>>(json);
+                NormalizeIds();
             }
         }
     }

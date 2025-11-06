@@ -7,6 +7,11 @@ namespace TodoList
     {
         private TodoList _todoList = new();
 
+        public TodoApp()
+        {
+            _todoList.LoadFromFile();
+        }
+
         public void Run()
         {
             bool exit = true;
@@ -35,6 +40,7 @@ namespace TodoList
                     case 1:
                         _todoList.DisplayAllTasks();
                         break;
+
                     case 2:
                         Console.WriteLine("Введите название задачи:");
                         string title = Console.ReadLine();
@@ -50,6 +56,7 @@ namespace TodoList
                             Console.WriteLine("Задача добавлена!\n");
                         }
                             break;
+
                     case 3:
                         Console.WriteLine("Введите номер задачи: ");
                         if (int.TryParse(Console.ReadLine(), out int idForRemove))
@@ -58,8 +65,10 @@ namespace TodoList
                             Console.WriteLine("Задача удалена.");
                         }
                         break;
+
                     case 4:
                         Console.WriteLine("Выход из программы...");
+                        _todoList.SaveToFile();
                         return false;
                     default:
                         Console.WriteLine("Неверный номер команды! Выберите 1-4");
